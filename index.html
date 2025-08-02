@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FirstSip Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+            touch-action: pan-y;
+            height: 100vh;
+        }
+
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: transform 0.5s ease-out;
+            margin: 0;
+            padding: 0;
+        }
+
+        .splash-screen img {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            max-width: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .swipe-up-container {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .swipe-up-text {
+            color: rgb(255, 255, 255);
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .swipe-up-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: rgba(0, 242, 255, 0.2);
+            border: 2px solid rgb(255, 255, 255);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: bounce 2s infinite;
+        }
+
+        .swipe-up-button::after {
+            content: "↑";
+            color: rgb(255, 255, 255);
+            font-size: 24px;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-10px);}
+            60% {transform: translateY(-5px);}
+        }
+
+        .category-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: transform 0.5s ease-out;
+        }
+
+        .category-container::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('img/menu2.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .category-container img {
+            width: 80%;
+            max-width: 300px;
+            margin-bottom: 20px;
+            margin-top: -100px;
+        }
+
+        .category-container h1 {
+            font-size: 2rem;
+            color: #ff0;
+            margin-bottom: 40px;
+        }
+
+        .category-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .category-button, .back-button {
+            padding: 15px 50px;
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: rgb(255, 200, 3);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .category-button:hover, .back-button:hover {
+            background-color: #ff0;
+        }
+
+        .menu-container {
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 15px;
+            box-sizing: border-box;
+            display: none;
+            position: relative;
+        }
+
+        .menu-container::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('img/menu2.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .menu-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .menu-header img {
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .menu-section {
+            margin-bottom: 20px;
+        }
+
+        .menu-section h2 {
+            color: #ff0;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed #ff0;
+        }
+
+        .menu-section h3 {
+            color: rgba(254, 122, 13, 0.89);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+        }
+
+        .menu-section.healthy h2 {
+            color: rgba(254, 122, 13, 0.89);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed rgba(254, 122, 13, 0.89);
+        }
+
+        .menu-section.healthy h3 {
+            color: #ff0;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+        }
+
+        .menu-section.healthy img {
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .menu-section img {
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .menu-item .price {
+            font-weight: bold;
+            color: #ff0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px 15px;
+            border-top: 2px solid #ff0;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .footer p {
+            margin-bottom: 10px;
+        }
+
+        .footer .social-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .footer .social-link {
+            display: flex;
+            align-items: center;
+            color: #ff0;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 1rem;
+            transition: color 0.3s;
+        }
+
+        .footer .social-link:hover {
+            color: #0ff;
+        }
+
+        .footer .social-link img {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .footer .developed-by {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .footer .developed-by img {
+            width: 30px;
+            height: 30px;
+            margin-left: 8px;
+            border-radius: 5px;
+        }
+
+        .swipe-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1001;
+        }
+
+        .back-button-container {
+            position: absolute;
+            top: 20px;
+            left: 10px;
+        }
+
+        .back-button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            color: #fff;
+            background-color: rgb(255, 200, 3);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .back-button:hover {
+            background-color: #ff0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <img src="img/menu1.jpeg" alt="FirstSip Logo">
+        <div class="swipe-up-container">
+            <div class="swipe-up-text">Swipe up to view menu</div>
+            <div class="swipe-up-button"></div>
+        </div>
+        <div class="swipe-area" id="swipeArea"></div>
+    </div>
+
+    <!-- Category Page -->
+    <div class="category-container" id="categoryContainer">
+        <div class="back-button-container">
+            <button class="back-button" onclick="goBackToSplash()">Back</button>
+        </div>
+        <img src="img/logo.png" alt="FirstSip Logo">
+        <h1>Choose</h1>
+        <div class="category-buttons">
+            <button class="category-button" onclick="showMenu('drinking')">Drinks</button>
+            <button class="category-button" onclick="showMenu('eating')">Snacks</button>
+            <button class="category-button" onclick="showMenu('healthy')">Healthy Salad's</button>
+        </div>
+    </div>
+
+    <!-- Menu Container -->
+    <div class="menu-container" id="menuContainer">
+        <div class="back-button-container">
+            <button class="back-button" onclick="goBackToCategory()">Back</button>
+        </div>
+        <div class="menu-header">
+            <img src="img/logo.png" alt="FirstSip Logo">
+        </div>
+
+        <!-- Drinking Sections -->
+        <div class="menu-section drinking">
+            <h2>FRESH JUICE</h2>
+            <img src="img/FRESH JUICE.png" alt="Fresh Juice">
+            <div class="menu-item"><span>WATERMELON</span><span class="price">40</span></div>
+            <div class="menu-item"><span>PINEAPPLE</span><span class="price">50</span></div>
+            <div class="menu-item"><span>PAPPAYA</span><span class="price">50</span></div>
+            <div class="menu-item"><span>MUSAMBI</span><span class="price">60</span></div>
+            <div class="menu-item"><span>MANGO</span><span class="price">60</span></div>
+            <div class="menu-item"><span>ORANGE</span><span class="price">60</span></div>
+            <div class="menu-item"><span>GRAPE</span><span class="price">60</span></div>
+            <div class="menu-item"><span>SHAMAM</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>CHICKU</span><span class="price">60</span></div>
+            <div class="menu-item"><span>APPLE</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>ANAR</span><span class="price">(R / SEASON)</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>HEALTHY JUICE</h2>
+            <img src="img/HEALTHY JUICE.png" alt="Healthy Juice">
+            <div class="menu-item"><span>BEETROOT JUICE</span><span class="price">70</span></div>
+            <div class="menu-item"><span>CARROT</span><span class="price">70</span></div>
+            <div class="menu-item"><span>CUCUMBER</span><span class="price">60</span></div>
+            <div class="menu-item"><span>ABC</span><span class="price">70</span></div>
+            <div class="menu-item"><span>FRUIT SHOT</span><span class="price">100</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>SMOOTHIES</h2>
+            <img src="img/SMOOTHIES.png" alt="Smoothies">
+            <div class="menu-item"><span>PINE APPLE</span><span class="price">50</span></div>
+            <div class="menu-item"><span>APPLE</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>WATER MELON</span><span class="price">50</span></div>
+            <div class="menu-item"><span>GRAPES</span><span class="price">60</span></div>
+            <div class="menu-item"><span>SHAMAM</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>ORANGE</span><span class="price">60</span></div>
+            <div class="menu-item"><span>ANAR</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>MANGO</span><span class="price">(R / SEASON)</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>FRUIT SHAKES</h2>
+            <img src="img/FRUIT SHAKES.png" alt="Fruit Shakes">
+            <div class="menu-item"><span>TENDER COCONUT</span><span class="price">70</span></div>
+            <div class="menu-item"><span>SHAMAM</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>PAPPAYA</span><span class="price">60</span></div>
+            <div class="menu-item"><span>CHIKOO</span><span class="price">70</span></div>
+            <div class="menu-item"><span>MANGO</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>DRY FRUIT</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>APPLE SHAKE</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>ANAR SHAKE</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>AVACADO SHAKE</span><span class="price">(R / SEASON)</span></div>
+            <div class="menu-item"><span>KANNUR COCKTAIL</span><span class="price">70</span></div>
+            <div class="menu-item"><span>SHARJA</span><span class="price">60</span></div>
+            <div class="menu-item"><span>SOUDI</span><span class="price">70</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>ICE CREAM SHAKES</h2>
+            <div class="menu-item"><span>STRAWBERRY</span><span class="price">60</span></div>
+            <div class="menu-item"><span>VANILLA</span><span class="price">60</span></div>
+            <div class="menu-item"><span>BUTTER SCOTCH</span><span class="price">60</span></div>
+            <div class="menu-item"><span>PISTA</span><span class="price">70</span></div>
+            <div class="menu-item"><span>SPANISH DELIGHT</span><span class="price">70</span></div>
+            <div class="menu-item"><span>CHOCOLATE</span><span class="price">70</span></div>
+            <div class="menu-item"><span>MANGO</span><span class="price">60</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>SPECIAL SHAKES</h2>
+            <img src="img/SPECIAL SHAKES.png" alt="Special Shakes">
+            <div class="menu-item"><span>DARK FANTASY SHAKE</span><span class="price">70</span></div>
+            <div class="menu-item"><span>OREO SHAKE</span><span class="price">70</span></div>
+            <div class="menu-item"><span>KITKAT SHAKE</span><span class="price">70</span></div>
+            <div class="menu-item"><span>MUNCH SHAKE</span><span class="price">70</span></div>
+            <div class="menu-item"><span>SNICKERS SHAKE</span><span class="price">70</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>DESSERT</h2>
+            <img src="img/DESSERT.png" alt="Dessert">
+            <div class="menu-item"><span>FRUIT SALAD</span><span class="price">80</span></div>
+            <div class="menu-item"><span>PUT ICE CREAM</span><span class="price">200</span></div>
+            <div class="menu-item"><span>BERRY UP</span><span class="price">130</span></div>
+            <div class="menu-item"><span>CHOCOLATE PLATER</span><span class="price">300</span></div>
+            <div class="menu-item"><span>ICE CREAM BOWL (ANY THREE SCOOP)</span><span class="price">60</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>FALOODA</h2>
+            <img src="img/FALOODA.png" alt="Falooda">
+            <div class="menu-item"><span>ARABIAN FALOODA</span><span class="price">220</span></div>
+            <div class="menu-item"><span>SPECIAL FALOODA</span><span class="price">180</span></div>
+            <div class="menu-item"><span>ROYAL FALOODA</span><span class="price">130</span></div>
+            <div class="menu-item"><span>PISTA FALOODA</span><span class="price">120</span></div>
+            <div class="menu-item"><span>BUTTER SCOTCH</span><span class="price">110</span></div>
+            <div class="menu-item"><span>VANILLA FALOODA</span><span class="price">100</span></div>
+            <div class="menu-item"><span>MANGO FALOODA</span><span class="price">110</span></div>
+            <div class="menu-item"><span>STRAWBERRY FALOODA</span><span class="price">100</span></div>
+            <div class="menu-item"><span>CHOCOLATE FALOODA</span><span class="price">130</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>ICE FRAPPE</h2>
+            <img src="img/ICE FRAPPE.png" alt="Ice Frappe">
+            <div class="menu-item"><span>GREEK FRAPPE</span><span class="price">60</span></div>
+            <div class="menu-item"><span>STRAWBERRY FRAPPE</span><span class="price">70</span></div>
+            <div class="menu-item"><span>CHOCOLATE FRAPPE</span><span class="price">70</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>MOJITO</h2>
+            <img src="img/MOJITO.png" alt="Mojito">
+            <div class="menu-item"><span>BLUE BERRY</span><span class="price">50</span></div>
+            <div class="menu-item"><span>STRAWBERRY</span><span class="price">50</span></div>
+            <div class="menu-item"><span>PASSION FRUIT</span><span class="price">50</span></div>
+            <div class="menu-item"><span>BLACKCURRANT</span><span class="price">50</span></div>
+            <div class="menu-item"><span>MINT</span><span class="price">50</span></div>
+            <div class="menu-item"><span>GREEN APPLE</span><span class="price">50</span></div>
+            <div class="menu-item"><span>BLUE CURRACO</span><span class="price">50</span></div>
+            <div class="menu-item"><span>GREEN LIME</span><span class="price">50</span></div>
+            <div class="menu-item"><span>ORANGE</span><span class="price">50</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>POWER DRINK</h2>
+            <img src="img/COLD COFFEE.png" alt="Power Drink">
+            <div class="menu-item"><span>COLD BOOST</span><span class="price">50</span></div>
+            <div class="menu-item"><span>COLD COFFEE</span><span class="price">40</span></div>
+            <div class="menu-item"><span>COLD HORLICKS</span><span class="price">50</span></div>
+            <div class="menu-item"><span>ROSE MILK</span><span class="price">40</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>AVIL MILK</h2>
+            <img src="img/AVIL MILK.png" alt="Avil Milk">
+            <div class="menu-item"><span>AVIL MILK NORMAL</span><span class="price">50</span></div>
+            <div class="menu-item"><span>AVIL MILK SPECIAL</span><span class="price">70</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>HOT DRINK</h2>
+            <img src="img/HOT DRINK.png" alt="Hot Drink">
+            <div class="menu-item"><span>COFFEE</span><span class="price">15</span></div>
+            <div class="menu-item"><span>TEA</span><span class="price">10</span></div>
+            <div class="menu-item"><span>BLACK COFFEE</span><span class="price">10</span></div>
+            <div class="menu-item"><span>MINT BLACK TEA</span><span class="price">12</span></div>
+            <div class="menu-item"><span>LEMON TEA</span><span class="price">15</span></div>
+            <div class="menu-item"><span>MASALA TEA</span><span class="price">30</span></div>
+        </div>
+
+        <div class="menu-section drinking">
+            <h2>REFRESHENER</h2>
+            <img src="img/FRESH LIM.png" alt="Refreshener">
+            <div class="menu-item"><span>FRESH LIME</span><span class="price">25</span></div>
+            <div class="menu-item"><span>MINT LIME</span><span class="price">30</span></div>
+            <div class="menu-item"><span>PINEAPPLE LIME</span><span class="price">30</span></div>
+            <div class="menu-item"><span>GRAPE LIME</span><span class="price">30</span></div>
+            <div class="menu-item"><span>SALT SODA</span><span class="price">20</span></div>
+            <div class="menu-item"><span>SWEET SODA LIME</span><span class="price">25</span></div>
+            <div class="menu-item"><span>NANARI SODA</span><span class="price">25</span></div>
+            <div class="menu-item"><span>CHILLI SODA</span><span class="price">25</span></div>
+            <div class="menu-item"><span>MASALA SODA</span><span class="price">30</span></div>
+        </div>
+
+        <!-- Eating Sections (Snacks) -->
+        <div class="menu-section eating">
+            <h2>BURGER</h2>
+            <img src="img/burger.png" alt="Burger">
+            <div class="menu-item"><span>CHICKEN BURGER</span><span class="price">90</span></div>
+            <div class="menu-item"><span>KING BURGER</span><span class="price">150</span></div>
+        </div>
+
+        <div class="menu-section eating">
+            <h2>FRIES</h2>
+            <img src="img/FRIES.png" alt="Fries">
+            <div class="menu-item"><span>FRENCH FRIES</span><span class="price">70</span></div>
+            <div class="menu-item"><span>PERI PERI FRIES</span><span class="price">80</span></div>
+        </div>
+
+        <!-- Healthy Foods Section -->
+        <div class="menu-section healthy">
+            <h2>SPECIAL HEALTHY COMBO</h2>
+            <br><br>
+            <img src="img/PINEAPPLE SALAD.png" alt="Healthy Foods">
+            <div class="menu-item"><span><h3>PINEAPPLE CHAT /SALAD</h3></span><span class="price">70</span></div>
+            <p>( PINEAPPLE, CORIANDERLEAVES, LIME, CHILLI )</p>
+            <br>
+            <img src="img/TOSSED SALAD.png" alt="Healthy Foods">
+            <div class="menu-item"><span><h3>TOSSED SALAD</h3></span><span class="price">80</span></div>
+            <p>( ONION, TOMATO, CAPSICUM, CUCUMBER, CARROT )</p>
+            <br><br><br>
+            <img src="img/HAWAYEIN SALAD.png" alt="Healthy Foods">
+            <div class="menu-item"><span><h3>HAWAYEIN SALAD</h3></span><span class="price">90</span></div>
+            <p>( ONION, CABAGE, CAPSICUM, LETTUCE, PARELI, PINEAPPLE, MAYONNAISE CARROT )</p>
+            <br><br><br><br>
+            <img src="img/RUSSIAN SALAD.png" alt="Healthy Foods">
+            <div class="menu-item"><span><h3>RUSSIAN SALAD</h3></span><span class="price">90</span></div>
+            <p>( APPLE, PINEAPPLE, POTATO, CARROT, BEANS, LETTUCE )</p>
+            <div class="menu-item"><span>EGG OR CKN</span><span class="price">120</span></div>
+            <br><br><br><br>
+            <img src="img/JAPANESE SALAD.png" alt="Healthy Foods">
+            <div class="menu-item"><span><h3>JAPANESE SALAD</h3></span><span class="price">90</span></div>
+            <p>( ORANGE, APPLE, LETTUCE, PINEAPPLE )</p>
+            <br><br><br><br>
+            <img src="img/ABC SALAD.png" alt="Healthy Foods">
+            <div class="menu-item"><span><h3>ABC SALAD</h3></span><span class="price">100</span></div>
+            <p>( APPLE, BEETROOT, CARROT )</p>
+            <br><br>
+        </div>
+
+        <div class="footer">
+            <p>901 SHOPPING COMPLEX, LYCEUM JUNCTION, POOCHAKKAL</p>
+            <p>Ph: 9447504569</p>
+            <p>PARCEL & DOOR DELIVERY AVAILABLE</p>
+            <div class="social-container">
+                <a href="https://www.instagram.com/ice_magic_first_sip?igsh=MTFzYXQxYXcwM2RsdQ==" class="social-link">
+                    <img src="img/instagram.png" alt="Instagram"> @ice_magic_first_sip
+                </a>
+            </div>
+            <div class="developed-by">
+                <span>Developed by </span>
+                <img src="img/inline.png" alt="Developer Logo">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const splashScreen = document.getElementById('splashScreen');
+            const categoryContainer = document.getElementById('categoryContainer');
+            const menuContainer = document.getElementById('menuContainer');
+            const swipeArea = document.getElementById('swipeArea');
+
+            let startY = 0;
+            let endY = 0;
+
+            swipeArea.addEventListener('touchstart', function(e) {
+                startY = e.touches[0].clientY;
+            }, {passive: true});
+
+            swipeArea.addEventListener('touchmove', function(e) {
+                endY = e.touches[0].clientY;
+                if (startY - endY > 10) {
+                    e.preventDefault();
+                }
+            }, {passive: false});
+
+            swipeArea.addEventListener('touchend', function() {
+                if (startY - endY > 50) {
+                    revealCategory();
+                }
+                startY = 0;
+                endY = 0;
+            }, {passive: true});
+
+            swipeArea.addEventListener('click', function() {
+                revealCategory();
+            });
+
+            function revealCategory() {
+                splashScreen.style.transform = 'translateY(-100%)';
+                setTimeout(function() {
+                    splashScreen.style.display = 'none';
+                    categoryContainer.style.display = 'flex';
+                    categoryContainer.style.transform = 'translateY(0)';
+                }, 500);
+            }
+
+            window.showMenu = function(category) {
+                categoryContainer.style.transform = 'translateY(-100%)';
+                setTimeout(function() {
+                    categoryContainer.style.display = 'none';
+                    menuContainer.style.display = 'block';
+
+                    // Show/hide sections based on category
+                    const sections = document.querySelectorAll('.menu-section');
+                    sections.forEach(section => {
+                        if (section.classList.contains(category)) {
+                            section.style.display = 'block';
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                }, 500);
+            };
+
+            window.goBackToSplash = function() {
+                categoryContainer.style.transform = 'translateY(100%)';
+                setTimeout(function() {
+                    categoryContainer.style.display = 'none';
+                    splashScreen.style.display = 'flex';
+                    splashScreen.style.transform = 'translateY(0)';
+                }, 500);
+            };
+
+            window.goBackToCategory = function() {
+                menuContainer.style.display = 'none';
+                categoryContainer.style.display = 'flex';
+                categoryContainer.style.transform = 'translateY(0)';
+            };
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
