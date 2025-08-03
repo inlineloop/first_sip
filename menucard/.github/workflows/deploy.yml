@@ -13,6 +13,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
@@ -20,11 +23,12 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload menucard directory as artifact
+      - name: Upload static HTML directory
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'menucard'  
+          path: 'menucard'
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
